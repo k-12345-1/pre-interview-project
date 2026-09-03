@@ -286,15 +286,30 @@ html.pinned .pinstage{
      it stays reachable instead of being cut off. In every size that does fit,
      there is no overflow and nothing captures the wheel. */
   overflow-x:hidden;overflow-y:auto;
+  /* This stays scrollable as a last-resort reachability fallback on a viewport
+     too short for the content to ever fit, but it must never RENDER a second
+     scrollbar next to the page's own — that reads as a broken, inconsistent
+     scrollbar because its thumb represents a tiny scroll range inside a ~100svh
+     track, so it looks abnormally long. Keep the behavior, hide the chrome. */
+  scrollbar-width:none;-ms-overflow-style:none;
   background:var(--bg);
   /* break out of the reading column: one idea should own the whole screen.
      --vw is the client width, set from script, so the scrollbar never
      turns this into horizontal overflow the way 100vw would. */
   width:var(--vw,100%);
   margin-left:calc(50% - var(--vw,100%)/2);
-  padding:clamp(1.75rem,4vh,3rem) clamp(1.5rem,4vw,4.5rem);
+  padding:clamp(1.4rem,3.1vh,2.6rem) clamp(1.5rem,4vw,4.5rem);
 }
 html.pinned .pinstage>*{flex:none;}
+html.pinned .pinstage::-webkit-scrollbar{width:0;height:0;display:none;}
+/* A pinned stage is locked to 100svh. When its column ran past that, the section
+   grew its own inner scrollbar beside the page one, so the intro copy is set
+   a step tighter in here than it is in the flat layout. */
+html.pinned .isay .lead{font-size:clamp(1rem,1.35vw,1.12rem);line-height:1.5;}
+html.pinned .isay .nextlab{margin-top:.75rem;}
+html.pinned .isay .next{gap:.24rem;}
+html.pinned .isay .next li{font-size:.94rem;line-height:1.35;}
+html.pinned .steps .kpi{line-height:1.4;}
 html.pinned .pinstage .cta{align-self:flex-start;}
 
 html.pinned .ihead{
@@ -315,7 +330,7 @@ html.pinned .track .lead{
    the strip itself would slide its own clipping region away with it, so later
    cards would never arrive. .viewport holds still and clips; .steps moves. */
 html.pinned .viewport{
-  display:block;overflow:hidden;margin:clamp(1.5rem,4vh,2.5rem) 0;
+  display:block;overflow:hidden;margin:clamp(.9rem,2.2vh,1.6rem) 0;
 }
 html.pinned .steps{
   overflow:visible;overscroll-behavior:auto;scroll-snap-type:none;
@@ -325,7 +340,22 @@ html.pinned .steps{
 /* The cards must stay stretched to equal height: that is what keeps every node
    on one line. Centring them individually breaks the spine. Vertical placement
    of the strip is handled by space-between on the stage instead. */
-html.pinned .steps>li{flex-basis:23rem;}
+html.pinned .steps>li{flex-basis:26rem;}
+
+/* Short windows: a laptop viewport is often 760-860px once browser chrome is
+   taken out, which is less than the 100svh a pinned stage claims. Step the
+   intro and the cards down so a stage still fits instead of growing its own
+   scrollbar beside the page one. */
+@media (max-height:900px){
+  html.pinned .track h3{font-size:clamp(1.4rem,2.6vw,2rem);}
+  html.pinned .isay .lead{font-size:.97rem;line-height:1.45;}
+  html.pinned .isay .nextlab{margin-top:.55rem;}
+  html.pinned .isay .next li{font-size:.88rem;line-height:1.3;}
+  html.pinned .steps .sb>b{font-size:1.07rem;line-height:1.34;}
+  html.pinned .steps .with{font-size:.93rem;line-height:1.42;margin-top:.4rem;}
+  html.pinned .steps .kpi{font-size:.87rem;line-height:1.36;margin-top:.4rem;padding-top:.35rem;}
+  html.pinned .steps{--dot:1.9rem;}
+}
 html.pinned .steps .sb>b{font-size:1.2rem;line-height:1.4;}
 html.pinned .steps .with{font-size:1.02rem;margin-top:.55rem;}
 html.pinned .steps .kpi{font-size:.95rem;margin-top:.55rem;padding-top:.45rem;}
